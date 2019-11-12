@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,8 +80,19 @@ public class AttPushProcessor {
 	 * 格式为 /iclock/cdata?options=all&language=xxxx&pushver=xxxx
 	 */
 	@RequestMapping(value = "/cdata", params = {"options", "language", "pushver"})
-	public void init(String sn, String options, String language, String pushver,
-	                 @RequestParam(required = false) String pushOptionsFlag, HttpServletResponse response) {
+	public void init(HttpServletRequest request, HttpServletResponse response) {
+		// /iclock/cdata?SN=CJDE193560303&options=all&language=83&pushver=2.4.0&PushOptionsFlag=1 HTTP/1.1
+		System.out.println("1111:" + request.getRemoteAddr() + " " + request.getRequestURL());
+		/* ============================================ */
+		for (String s : request.getParameterMap().keySet()) {
+			System.out.println("1111S:" + s + ":" + request.getParameter(s));
+		}
+		/* ============================================ */
+		String sn = request.getParameter("SN");
+		String options = request.getParameter("options");
+		String language = request.getParameter("language");
+		String pushver = request.getParameter("pushver");
+		String pushOptionsFlag = request.getParameter("PushOptionsFlag");
 		System.out.println("options=" + options + "....language=" + language + "....pushver=" + pushver);
 		try {
 			System.out.println("考勤机初始化请求进来了......");
@@ -96,7 +106,7 @@ public class AttPushProcessor {
 			// response.getWriter().write("UNKNOWN DEVICE")
 		}
 		catch (IOException e) {
-			myLog.error(e.getMessage(),e);
+			myLog.error(e.getMessage(), e);
 		}
 	}
 	/**
@@ -104,6 +114,12 @@ public class AttPushProcessor {
 	 */
 	@RequestMapping("/getrequest")
 	public void heartBeat(String sn, HttpServletResponse response, HttpServletRequest request) {
+		System.out.println("2222:" + request.getRemoteAddr() + " " + request.getRequestURL());
+		/* ============================================ */
+		for (String s : request.getParameterMap().keySet()) {
+			System.out.println("2222S:" + s + ":" + request.getParameter(s));
+		}
+		/* ============================================ */
 		System.out.println(request.getParameter("SN"));
 		StringBuffer sb = new StringBuffer("OK");
 		List<String> cmds = cmdMap.get(sn);
@@ -127,7 +143,7 @@ public class AttPushProcessor {
 			response.getWriter().write(sb.toString());
 		}
 		catch (IOException e) {
-			myLog.error(e.getMessage(),e);
+			myLog.error(e.getMessage(), e);
 		}
 	}
 	/**
@@ -135,7 +151,13 @@ public class AttPushProcessor {
 	 * 这个请求，服务器只能返回OK，不可以返回命令
 	 */
 	@RequestMapping("/ping")
-	public void ping(HttpServletResponse response) {
+	public void ping(HttpServletRequest request, HttpServletResponse response) {
+		System.out.println("3333:" + request.getRemoteAddr() + " " + request.getRequestURL());
+		/* ============================================ */
+		for (String s : request.getParameterMap().keySet()) {
+			System.out.println("3333S:" + s + ":" + request.getParameter(s));
+		}
+		/* ============================================ */
 		System.out.println("考勤机心跳请求进来了......ping" + new SimpleDateFormat("HH:mm:ss").format(new Date()));
 		try {
 			response.getWriter().write("OK");
@@ -148,8 +170,14 @@ public class AttPushProcessor {
 	 * 4，设备端处理完命令以后会发送该请求，告诉服务器命令的处理结果
 	 */
 	@RequestMapping("/devicecmd")
-	public void handleCmd(String sn, @RequestBody String data, HttpServletResponse response) {
-		System.out.println(sn+"设备处理完命令以后的返回结果..." + data);
+	public void handleCmd(String sn, @RequestBody String data, HttpServletRequest request, HttpServletResponse response) {
+		System.out.println("4444:" + request.getRemoteAddr() + " " + request.getRequestURL());
+		/* ============================================ */
+		for (String s : request.getParameterMap().keySet()) {
+			System.out.println("4444S:" + s + ":" + request.getParameter(s));
+		}
+		/* ============================================ */
+		System.out.println(sn + "设备处理完命令以后的返回结果..." + data);
 		try {
 			response.getWriter().write("OK");
 		}
@@ -159,8 +187,14 @@ public class AttPushProcessor {
 	}
 	@RequestMapping(value = "/cdata", params = "table")
 	public void handleRtData(HttpServletRequest request, HttpServletResponse response, String sn, String table) {
+		System.out.println("5555:" + request.getRemoteAddr() + " " + request.getRequestURL());
+		/* ============================================ */
+		for (String s : request.getParameterMap().keySet()) {
+			System.out.println("5555S:" + s + ":" + request.getParameter(s));
+		}
+		/* ============================================ */
 		//System.out.println("设备上传上来的数据...."+data+"....table..."+table)
-		System.out.println(sn+"设备上传上来的数据...table..."+table);
+		System.out.println(sn + "设备上传上来的数据...table..." + table);
 		String data = "";
 		ByteArrayOutputStream bos = null;
 		byte[] b = new byte[1024];
@@ -187,7 +221,7 @@ public class AttPushProcessor {
 				saveFile(System.currentTimeMillis() + ".jpg", photo);
 			}
 			catch (JSONException e) {
-				myLog.error(e.getMessage(),e);
+				myLog.error(e.getMessage(), e);
 			}
 		}
 		if(ConstantStr.OPER_LOG.equals(table)) {
@@ -221,7 +255,7 @@ public class AttPushProcessor {
 			cmdMap.put(sn, cmdList);
 		}
 		catch (Exception e) {
-			myLog.error(e.getMessage(),e);
+			myLog.error(e.getMessage(), e);
 		}
 	}
 	/**
