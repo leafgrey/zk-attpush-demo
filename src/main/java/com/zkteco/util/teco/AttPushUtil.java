@@ -74,6 +74,10 @@ public class AttPushUtil {
 		devOptions.append("\nTimeZone=8");
 		//实时上传
 		devOptions.append("\nRealtime=1");
+		//服务器版本
+		devOptions.append("\nPushProtVer=2.3.0");
+		//是否加密
+		devOptions.append("\nEncryptFlag=0");
 		if(ConstantStr.NUM_STR1.equals(pushOptionsFlag)) {
 			// 支持参数单独获取的才要把需要获取的参数回传给设备 modifeid by max 20170926
 			// 软件需要设备推送的参数列表

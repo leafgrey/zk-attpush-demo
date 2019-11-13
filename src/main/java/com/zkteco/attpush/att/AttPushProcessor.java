@@ -66,7 +66,7 @@ public class AttPushProcessor {
 			myLog.info("2222:S:" + s + ":" + request.getParameter(s));
 		}
 		String sn = request.getParameter("SN");
-		StringBuffer sb = new StringBuffer("OK");
+		StringBuilder sb = new StringBuilder("OK");
 		List<String> cmds = cmdMap.get(sn);
 		//等于空说明从来没加载过，如果初始化加载过了，此时应该不为Null 只是size为0
 		if(cmds == null) {
@@ -83,19 +83,21 @@ public class AttPushProcessor {
 			//如果有命令就不返回OK了
 			sb.setLength(0);
 			// cmds.stream().forEach(cmd -> sb.append(cmd).append("\r\n\r\n"))
-			cmds.forEach(cmd -> sb.append(cmd).append("\r\n\r\n"));
+			for (String cmd : cmds) {
+				sb.append(cmd).append("\r\n\r\n");
+			}
 		}
-		myLog.info("心跳的返回结果为：" + sb);
+		myLog.info("回复心跳的结果：" + sb);
 		try {
 			//处理完以后立刻将集合清空，实际开发中应该是在/devicecmd这个请求里完成
-			cmdMap.get(sn).clear();
+			// cmdMap.get(sn).clear();
 			response.getWriter().write(sb.toString());
 		}
 		catch (IOException e) {
 			myLog.error(e.getMessage(), e);
 		}
 	}
-	/**
+	 /**
 	 * 3，候补心跳请求，正常情况下设备不发此请求，有大量数据上传的时候，不发上面的心跳，发这个请求，
 	 * 这个请求，服务器只能返回OK，不可以返回命令
 	 */
@@ -125,6 +127,8 @@ public class AttPushProcessor {
 		String sn = request.getParameter("SN");
 		myLog.info(sn + "设备处理完命令以后的返回结果：" + data);
 		try {
+			// TODO
+			cmdMap.get(sn).clear();
 			response.getWriter().write("OK");
 		}
 		catch (IOException e) {
