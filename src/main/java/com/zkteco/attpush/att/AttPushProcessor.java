@@ -22,6 +22,7 @@ import java.util.*;
 @RequestMapping("/iclock")
 public class AttPushProcessor {
 	private final static Logger myLog = Logger.getRootLogger();
+	Logger l = Logger.getRootLogger();
 	private static Map<String, List<String>> cmdMap = new HashMap<>();
 	/**
 	 * 1，设备通完电以后第一个发送到后台的请求
