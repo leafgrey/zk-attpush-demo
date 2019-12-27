@@ -67,9 +67,9 @@ public class AttPushUtil {
 		devOptions.append("\nBIODATAStamp=0");
 		devOptions.append("\nATTPHOTOStamp=0");
 		//断网重连
-		devOptions.append("\nErrorDelay=30");
+		devOptions.append("\nErrorDelay=60");
 		//心跳间隔
-		devOptions.append("\nDelay=10");
+		devOptions.append("\nDelay=60");
 		//时区
 		devOptions.append("\nTimeZone=8");
 		//实时上传
